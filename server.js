@@ -10,22 +10,42 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-app.get("/notes", (req, res) => 
-    res.sendFile(path.join(__dirname, '/public/notes.html'))
+// HTML route for notes.html
+app.get("/notes", (req, res) =>
+  res.sendFile(path.join(__dirname, "/public/notes.html"))
 );
 
+// API routes
 app.get("/api/notes", (req, res) => {
-    fs.readFile('.db/db.json', 'utf8', (err, data) => {
-        if (err) res.status(500).json(err);
-        
-    })
+  fs.readFile("./db/db.json", "utf8", (err, data) => {
+    if (err) res.status(500).json(err);
+    const notes = JSON.parse(data);
+    res.json(notes);
+  });
 });
 
-app.post("/api/notes", (req, res) => {});
+app.post("/api/notes", (req, res) => {
+  const newNote = req.body;
+  newNote.id = uniqid();
 
-app.get("*", (req, res) => 
-    res.sendFile(path.join(__dirname, '/public/index.html'))
+  fs.readFile("./db/db.json", "utf8", (err, data) => {
+    if (err) res.status(500).json(err);
+    const notes = JSON.parse(data);
+    notes.push(newNote);
+
+    fs.writeFile("./db/db.json", JSON.stringify(notes), (err) => {
+      if (err) res.status(500).json(err);
+      res.json(newNote);
+    });
+  });
+});
+
+// HTML route for wildcard
+app.get("*", (req, res) =>
+  res.sendFile(path.join(__dirname, "/public/index.html"))
 );
+
+app.delete("/api/notes/:id", (req, res) => {});
 
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT}`)
