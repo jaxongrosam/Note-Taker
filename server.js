@@ -45,7 +45,12 @@ app.get("*", (req, res) =>
   res.sendFile(path.join(__dirname, "/public/index.html"))
 );
 
-app.delete("/api/notes/:id", (req, res) => {});
+// Unsuccessful delete function
+// app.delete("/api/notes/:id", (req, res) => {
+//     fs.readFile("./db/db.json", "utf8", ())
+
+//     const notes = JSON.parse(data);
+// });
 
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT}`)
